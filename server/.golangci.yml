@@ -1,0 +1,114 @@
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    # III.1 Dénomination
+    - asciicheck
+    - varnamelen
+    - gochecknoinits
+    - errname
+    - predeclared
+    # III.2 Formatage / tailles
+    - funlen
+    - lll
+    - whitespace
+    - nestif
+    - gocyclo
+    - gocognit
+    # III.3 Fonctions / erreurs
+    - revive
+    - nakedret
+    - errorlint
+    - unparam
+    # III.4 Types
+    - exhaustive
+    # III.7 Constantes
+    - mnd
+    - goconst
+    # III.8 Interdits
+    - forbidigo
+    - nolintlint
+    # III.9 Commentaires
+    - godot
+    - misspell
+    - dupword
+    # Divers
+    - unconvert
+    - copyloopvar
+    - intrange
+    - gosec
+
+  settings:
+    staticcheck:
+      checks: ["all", "-ST1000"]
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    funlen:
+      lines: 25
+      statements: -1
+      ignore-comments: true
+    lll:
+      line-length: 80
+      tab-width: 4
+    nestif:
+      min-complexity: 3
+    gocyclo:
+      min-complexity: 10
+    gocognit:
+      min-complexity: 15
+    nakedret:
+      max-func-lines: 0
+    varnamelen:
+      max-distance: 5
+      min-name-length: 3
+      ignore-type-assert-ok: true
+      ignore-map-index-ok: true
+      ignore-chan-recv-ok: true
+      ignore-names: [err, i, j, id, ok]
+    exhaustive:
+      default-signifies-exhaustive: true
+    forbidigo:
+      forbid:
+        - pattern: ^panic$
+          msg: return an error instead
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    misspell:
+      locale: US
+    godot:
+      scope: declarations
+    revive:
+      enable-default-rules: true
+      rules:
+        - name: argument-limit
+          arguments: [4]
+        - name: function-result-limit
+          arguments: [2]
+        - name: max-control-nesting
+          arguments: [3]
+        - name: deep-exit
+        - name: early-return
+        - name: indent-error-flow
+        - name: unused-parameter
+        - name: confusing-naming
+        - name: exported
+        - name: package-comments
+          disabled: true
+        - name: var-naming
+        - name: receiver-naming
+        - name: error-strings
+        - name: error-naming
+        - name: error-return
+
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters: [funlen, goconst, mnd, varnamelen, lll]
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
