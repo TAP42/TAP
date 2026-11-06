@@ -1,0 +1,8 @@
+# Binaires Go
+/bin/
+*.out
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
