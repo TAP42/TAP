@@ -9,3 +9,7 @@ eframe = "0.37"
 
 [build]
 target-dir = "bin"
+
+[lints.rust]
+unused_imports = "allow"
+dead_code = "allow"

@@ -1,17 +1,12 @@
+mod panels;
+use panels::{draw_top, draw_input, draw_room, draw_side};
 use eframe::egui;
+use crate::state::AppState;
 
 
-pub fn  counter_gui(ui: &mut egui::Ui, counter: &mut i32) {
-    let temp: &str = "https://github.com/TAP42/TAP";
-
-    // .horizontal: une ligne/un groupe de components
-    // .button, .label: components bouton et text field
-
-    ui.horizontal(|ui| {
-        if ui.button("+").clicked() {
-            *counter += 1;
-        }
-        ui.label(counter.to_string());
-        ui.hyperlink(temp);
-    });
+pub fn draw(ui: &mut egui::Ui, state: &AppState) {
+    draw_top(ui, state);
+    //draw_input(ui, state);
+    //draw_room(ui, state);
+    //draw_side(ui, state);
 }

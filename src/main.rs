@@ -1,17 +1,19 @@
 mod gui;
-use gui::counter_gui;
+mod palette;
+mod state;
+use gui::draw;
 use eframe::egui;
 
 #[derive(Default)]
 struct  TApp {
-    counter: i32,
+    app: state::AppState,
 }
 
 impl eframe::App for TApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ui, |ui| {
-            ui.heading("counter");
-            counter_gui(ui, &mut self.counter);
+            ui.heading("testing");
+            draw(ui, &self.app)
         });
     }
 }
