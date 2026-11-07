@@ -6,3 +6,6 @@ edition = "2024"
 [dependencies]
 serde_json = "1.0"
 eframe = "0.37"
+
+[build]
+target-dir = "bin"
