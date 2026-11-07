@@ -7,8 +7,8 @@ pub fn draw_template(ui: &mut Ui, state: &AppState) {
     ui.horizontal(|ui| {
         // adding text
         ui.label("text");
-        // sized text
-        ui.label(sized("text"));
+        // text sizing 10px
+        ui.label(sized("text", 10.0));
         // bold text
         ui.label(bold("text"));
         // text colored in red
