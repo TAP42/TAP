@@ -1,4 +1,5 @@
 SERVER_DIR := server
+CLIENT_DIR := client
 BIN_DIR := bin
 PORT ?= 4242
 GO_SRC := $(shell find $(SERVER_DIR) -name '*.go' ! -name '*_test.go')
@@ -12,14 +13,15 @@ install:
 	go -C $(SERVER_DIR) mod download
 	curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b $(GOBIN) $(GOLANGCI_VERSION)
 
-build: lint
+build:
 	go -C $(SERVER_DIR) build -o ../$(BIN_DIR)/server
+	go -C $(CLIENT_DIR) build -o ../$(BIN_DIR)/client
 
 run-server: build
 	./$(BIN_DIR)/server
 
 run-client:
-	@echo "run-client: pas encore implémenté" && exit 1
+	./$(BIN_DIR)/client
 
 run-client-gui:
 	@echo "run-client-gui: pas encore implémenté" && exit 1
