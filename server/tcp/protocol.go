@@ -2,6 +2,7 @@ package tcp
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"strings"
 )
@@ -11,6 +12,8 @@ const (
 	greeting       = "OK hello proto=1"
 	byeReply       = "OK BYE"
 	unknownCommand = "ERR 400 UNKNOWN_COMMAND"
+	nameInUse      = "ERR 201 NAME_IN_USE"
+	connectedReply = "OK CONNECTED"
 )
 
 // parseCommand splits a line into an upper-case command and its arguments.
@@ -26,11 +29,21 @@ func writeLine(conn net.Conn, line string) error {
 }
 
 // handleCommand answers one command and reports whether the client leaves.
-func handleCommand(conn net.Conn, command string) (bool, error) {
+func handleCommand(conn net.Conn, command string, args string, players *registry) (bool, error) {
 	switch command {
 	case "QUIT":
 		return true, writeLine(conn, byeReply)
+	case "CONNECT":
+		return false, handleConnect(conn, args, players)
 	default:
 		return false, writeLine(conn, unknownCommand)
 	}
+}
+
+func handleConnect(conn net.Conn, args string, players *registry) error {
+	err := players.add(args, conn)
+	if err != nil {
+		log.Printf("Error")
+	}
+	return writeLine(conn, connectedReply)
 }

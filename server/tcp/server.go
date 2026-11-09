@@ -22,13 +22,15 @@ func TCP() error {
 	}
 	defer closeOrLog(listener, "listener")
 
+	players := newRegistry()
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Printf("accept connection: %v", err)
 			continue
 		}
-		go handleConnection(conn)
+		go handleConnection(conn, players)
 	}
 }
 
@@ -41,7 +43,7 @@ func closeOrLog(c io.Closer, name string) {
 
 // handleConnection greets one client, then answers its commands until it
 // quits or disconnects.
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, players *registry) {
 	defer closeOrLog(conn, "connection")
 	if err := writeLine(conn, greeting); err != nil {
 		log.Printf("write greeting: %v", err)
@@ -54,8 +56,8 @@ func handleConnection(conn net.Conn) {
 			log.Printf("read: %v", err)
 			return
 		}
-		command, _ := parseCommand(message)
-		quit, err := handleCommand(conn, command)
+		command, args := parseCommand(message)
+		quit, err := handleCommand(conn, command, args, players)
 		if err != nil {
 			log.Printf("write: %v", err)
 			return

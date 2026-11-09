@@ -27,8 +27,8 @@ func newRegistry() *registry {
 func (r *registry) add(name string, conn net.Conn) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	errNameInUse := errors.New("Name already in use")
 	if _, present := r.players[name]; present {
-		errNameInUse := errors.New("Name already in use")
 		return errNameInUse
 	}
 	r.players[name] = &Player{name: name, conn: conn}
