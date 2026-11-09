@@ -1,12 +1,12 @@
-mod panels;
-use panels::{draw_top, draw_input, draw_room, draw_side};
+pub mod panels;
+pub mod scenes;
+pub mod components;
+
 use eframe::egui;
 use crate::state::AppState;
+use crate::gui::panels::{draw_top};
+use crate::gui::scenes::{draw_menu, draw_game};
 
-
-pub fn draw(ui: &mut egui::Ui, state: &AppState) {
-    draw_top(ui, state);
-    //draw_input(ui, state);
-    //draw_room(ui, state);
-    //draw_side(ui, state);
+pub fn draw(ui: &mut egui::Ui, state: &mut AppState) {
+    draw_menu(ui, state);
 }

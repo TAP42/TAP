@@ -20,8 +20,16 @@ impl Default for PlayerStats {
     }
 }
 
+#[derive(Default, PartialEq, Clone, Copy)]
+pub enum    Scene {
+    #[default]
+    Menu,
+    Game,
+}
+
 #[derive(Default)]
 pub struct  AppState {
+    pub scene: Scene,
     pub stats: PlayerStats,
     pub connected: bool,
     pub host: String,

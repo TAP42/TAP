@@ -13,7 +13,7 @@ impl eframe::App for TApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ui, |ui| {
             ui.heading("testing");
-            draw(ui, &self.app)
+            draw(ui, &mut self.app)
         });
     }
 }
