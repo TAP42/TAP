@@ -2,7 +2,6 @@ package tcp
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strings"
 )
@@ -10,10 +9,15 @@ import (
 // Protocol lines sent by the server (RFC 42TAP).
 const (
 	greeting       = "OK hello proto=1"
-	byeReply       = "OK BYE"
+	byeReply       = "OK bye"
 	unknownCommand = "ERR 400 UNKNOWN_COMMAND"
 	nameInUse      = "ERR 201 NAME_IN_USE"
-	connectedReply = "OK CONNECTED"
+	connectedReply = "OK connected"
+	noConnected    = "ERR 400 NOT_CONNECTED"
+
+	// Not in the RFC: CONNECT sent twice, or with a bad name.
+	alreadyConnected = "ERR 400 ALREADY_CONNECTED"
+	invalidName      = "ERR 400 INVALID_NAME"
 )
 
 // parseCommand splits a line into an upper-case command and its arguments.
@@ -29,21 +33,36 @@ func writeLine(conn net.Conn, line string) error {
 }
 
 // handleCommand answers one command and reports whether the client leaves.
-func handleCommand(conn net.Conn, command string, args string, players *registry) (bool, error) {
+func handleCommand(
+	sess *session,
+	command string,
+	args string,
+	players *registry,
+) (bool, error) {
 	switch command {
 	case "QUIT":
-		return true, writeLine(conn, byeReply)
+		return true, writeLine(sess.conn, byeReply)
 	case "CONNECT":
-		return false, handleConnect(conn, args, players)
-	default:
-		return false, writeLine(conn, unknownCommand)
+		return false, handleConnect(sess, args, players)
 	}
+	if sess.player == nil {
+		return false, writeLine(sess.conn, noConnected)
+	}
+	return false, writeLine(sess.conn, unknownCommand)
 }
 
-func handleConnect(conn net.Conn, args string, players *registry) error {
-	err := players.add(args, conn)
-	if err != nil {
-		log.Printf("Error")
+// handleConnect gives the session a player name, once, if the name is free.
+func handleConnect(sess *session, name string, players *registry) error {
+	if sess.player != nil {
+		return writeLine(sess.conn, alreadyConnected)
 	}
-	return writeLine(conn, connectedReply)
+	if name == "" || strings.ContainsAny(name, " \t") {
+		return writeLine(sess.conn, invalidName)
+	}
+	player, err := players.add(name, sess.conn)
+	if err != nil {
+		return writeLine(sess.conn, nameInUse)
+	}
+	sess.player = player
+	return writeLine(sess.conn, connectedReply)
 }

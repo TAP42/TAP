@@ -49,6 +49,8 @@ func handleConnection(conn net.Conn, players *registry) {
 		log.Printf("write greeting: %v", err)
 		return
 	}
+	sess := &session{conn: conn}
+	defer sess.leave(players)
 	reader := bufio.NewReader(conn)
 	for {
 		message, err := reader.ReadString('\n')
@@ -57,7 +59,7 @@ func handleConnection(conn net.Conn, players *registry) {
 			return
 		}
 		command, args := parseCommand(message)
-		quit, err := handleCommand(conn, command, args, players)
+		quit, err := handleCommand(sess, command, args, players)
 		if err != nil {
 			log.Printf("write: %v", err)
 			return
