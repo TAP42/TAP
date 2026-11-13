@@ -11,16 +11,17 @@ fn  connection_code(c: &bool) -> RichText {
 }
 
 pub fn draw_top(ui: &mut Ui, state: &AppState) {
+    let text_size: f32 = state.settings.text_size;
     let progress = state.stats.hp;
 
     ui.horizontal(|ui| {
-        ui.label(sized(bold("Status:"), 20.0));
-        ui.label(sized(bold(connection_code(&state.connected)), 20.0));
+        ui.label(sized(bold("Status:"), text_size));
+        ui.label(sized(bold(connection_code(&state.connected)), text_size));
         ui.separator();
         ui.label(sized(format!("{} - {}/{}HP",
             state.stats.name,
             state.stats.hp,
-            state.stats.max_hp), 20.0));
+            state.stats.max_hp), text_size));
     });
     ui.add(ProgressBar::new(progress as f32).show_percentage().desired_width(400.0).desired_height(15.0));
     ui.separator();
