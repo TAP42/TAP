@@ -5,7 +5,7 @@ pub mod components;
 use eframe::egui;
 use crate::state::{AppState, Scene};
 use crate::gui::panels::{draw_top};
-use crate::gui::scenes::{draw_menu, draw_game, byebye, settings};
+use crate::gui::scenes::{draw_menu, draw_game, byebye, settings, connect};
 
 pub fn draw(ui: &mut egui::Ui, state: &mut AppState) {
     match state.scene {
@@ -13,5 +13,6 @@ pub fn draw(ui: &mut egui::Ui, state: &mut AppState) {
         Scene::Game => draw_game(ui, state),
         Scene::Quit => byebye(ui, state),
         Scene::Settings => settings(ui, state),
+        Scene::Lobby => connect(ui, state),
     }
 }

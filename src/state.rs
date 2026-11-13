@@ -10,6 +10,7 @@ pub enum    Scene {
     Game,
     Quit,
     Settings,
+    Lobby,
 }
 
 const   MIN_SCALE: f32 = 0.5;
@@ -80,6 +81,7 @@ pub struct  PlayerStats {
     pub atk: i32,
     pub def: i32,
     pub spd: i32,
+    pub bal: i32,
     pub name: String,
 }
 
@@ -91,6 +93,7 @@ impl Default for PlayerStats {
             atk: 1,
             def: 1,
             spd: 1,
+            bal: 100,
             name: "Name".to_string(),
         }
     }
@@ -100,14 +103,20 @@ impl Default for PlayerStats {
 pub struct  AppState {
     pub scene: Scene,
     pub previous_scene: Option<Scene>,
+
     pub stats: PlayerStats,
+    
     pub connected: bool,
+    pub connecting: bool,
+    pub show_connect: bool,
     pub host: String,
     pub port: String,
+
     pub selected_channel: i32,
     pub input_text: String,
     pub chat: Vec<Vec<String>>,
     pub logs: Vec<String>,
+    
     pub settings: Settings,
 }
 

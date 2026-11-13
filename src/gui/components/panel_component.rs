@@ -2,22 +2,16 @@ use eframe::egui::{Ui, RichText, ProgressBar};
 use crate::state::AppState;
 use crate::palette::{colored, sized, bold, *};
 
-pub fn draw_template(ui: &mut Ui, state: &AppState) {
-    // adding a paragraph
-    ui.horizontal(|ui| {
-        // adding text
-        ui.label("text");
-        // text sizing 10px
-        ui.label(sized("text", 10.0));
-        // bold text
-        ui.label(bold("text"));
-        // text colored in red
-        ui.label(colored("text", RED));
-        // separating
-        ui.separator();
+pub fn centered<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) {
+    ui.vertical_centered(|ui| {
+        ui.add_space(8.0);
+        add_contents(ui);
     });
+}
 
-    // to add a progress bar
-    let progress: f32 = 20.0;
-    ui.add(ProgressBar::new(progress).show_percentage();
+pub fn row<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) {
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 10.0;
+        add_contents(ui)
+    });
 }
