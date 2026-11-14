@@ -1,0 +1,173 @@
+{
+  "commands": [
+    {
+      "name": "CONNECT",
+      "category": "core",
+      "aliases": [],
+      "usage": "CONNECT <username>",
+      "summary": "Log in with a unique username.",
+      "args": { "min": 1, "max": 1, "rest": false },
+      "examples": ["CONNECT alice"]
+    },
+    {
+      "name": "LOOK",
+      "category": "core",
+      "aliases": ["l"],
+      "usage": "LOOK",
+      "summary": "Show the current room.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["LOOK"]
+    },
+    {
+      "name": "MOVE",
+      "category": "core",
+      "aliases": ["go", "m"],
+      "usage": "MOVE <direction>",
+      "summary": "Move to an adjacent room.",
+      "args": { "min": 1, "max": 1, "rest": false },
+      "examples": ["MOVE north"]
+    },
+    {
+      "name": "QUIT",
+      "category": "core",
+      "aliases": ["exit"],
+      "usage": "QUIT",
+      "summary": "Leave the game.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["QUIT"]
+    },
+    {
+      "name": "CHAT",
+      "category": "communication",
+      "aliases": ["say"],
+      "usage": "CHAT <GLOBAL|ROOM|GROUP> <message>",
+      "summary": "Send a message to a scope.",
+      "args": { "min": 2, "max": 2, "rest": true },
+      "examples": ["CHAT ROOM hello there"]
+    },
+    {
+      "name": "WHO",
+      "category": "communication",
+      "aliases": [],
+      "usage": "WHO",
+      "summary": "Show the number of players online.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["WHO"]
+    },
+    {
+      "name": "GROUP",
+      "category": "group",
+      "aliases": ["g"],
+      "usage": "GROUP <CREATE|INVITE|JOIN|LEAVE> [arg]",
+      "summary": "Manage your group.",
+      "args": { "min": 1, "max": 2, "rest": false },
+      "subcommands": [
+        {
+          "name": "CREATE",
+          "usage": "GROUP CREATE",
+          "summary": "Create a new group.",
+          "args": { "min": 0, "max": 0, "rest": false }
+        },
+        {
+          "name": "INVITE",
+          "usage": "GROUP INVITE <username>",
+          "summary": "Invite a player to your group.",
+          "args": { "min": 1, "max": 1, "rest": false }
+        },
+        {
+          "name": "JOIN",
+          "usage": "GROUP JOIN <leader-name>",
+          "summary": "Join the group of a leader.",
+          "args": { "min": 1, "max": 1, "rest": false }
+        },
+        {
+          "name": "LEAVE",
+          "usage": "GROUP LEAVE",
+          "summary": "Leave your group.",
+          "args": { "min": 0, "max": 0, "rest": false }
+        }
+      ]
+    },
+    {
+      "name": "TAKE",
+      "category": "item",
+      "aliases": ["get"],
+      "usage": "TAKE <item>",
+      "summary": "Pick up an item in the room.",
+      "args": { "min": 1, "max": 1, "rest": true },
+      "examples": ["TAKE Healing Potion", "TAKE item.herbs"]
+    },
+    {
+      "name": "DROP",
+      "category": "item",
+      "aliases": [],
+      "usage": "DROP <item>",
+      "summary": "Drop an item in the room.",
+      "args": { "min": 1, "max": 1, "rest": true },
+      "examples": ["DROP item.herbs"]
+    },
+    {
+      "name": "INVENTORY",
+      "category": "item",
+      "aliases": ["inv", "i"],
+      "usage": "INVENTORY",
+      "summary": "List your items.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["INVENTORY"]
+    },
+    {
+      "name": "TALK",
+      "category": "npc",
+      "aliases": [],
+      "usage": "TALK <npc>",
+      "summary": "Talk to an NPC in the room.",
+      "args": { "min": 1, "max": 1, "rest": true },
+      "examples": ["TALK Baker"]
+    },
+    {
+      "name": "ATTACK",
+      "category": "combat",
+      "aliases": ["atk"],
+      "usage": "ATTACK <npc>",
+      "summary": "Attack a hostile NPC.",
+      "args": { "min": 1, "max": 1, "rest": true },
+      "examples": ["ATTACK goblin"]
+    },
+    {
+      "name": "STATUS",
+      "category": "combat",
+      "aliases": ["st"],
+      "usage": "STATUS",
+      "summary": "Show your health and combat status.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["STATUS"]
+    },
+    {
+      "name": "QUEST",
+      "category": "quest",
+      "aliases": [],
+      "usage": "QUEST <npc>",
+      "summary": "Ask an NPC for a quest.",
+      "args": { "min": 1, "max": 1, "rest": true },
+      "examples": ["QUEST merchant"]
+    },
+    {
+      "name": "QUESTS",
+      "category": "quest",
+      "aliases": [],
+      "usage": "QUESTS",
+      "summary": "List your active and completed quests.",
+      "args": { "min": 0, "max": 0, "rest": false },
+      "examples": ["QUESTS"]
+    },
+    {
+      "name": "HELP",
+      "category": "client",
+      "aliases": ["h", "?"],
+      "usage": "HELP [command]",
+      "summary": "Show commands, or details for one command.",
+      "args": { "min": 0, "max": 1, "rest": false },
+      "examples": ["HELP", "HELP MOVE"]
+    }
+  ]
+}
