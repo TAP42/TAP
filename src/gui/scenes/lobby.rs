@@ -1,6 +1,6 @@
 //pops an internal window in the existing window, w/ address, host, player's username
-use eframe::egui::{Ui, Window};
-use crate::gui::components::{button, back, window, field};
+use eframe::egui::{Ui, Layout, Align};
+use crate::gui::components::{button, window, field, row, align};
 use crate::state::{AppState, Scene};
 use crate::palette::{colored, sized, bold, *};
 
@@ -14,13 +14,25 @@ pub fn  connect(ui: &mut Ui, state: &mut AppState) {
         field(ui, &state.settings, sized("Port", text_size), &mut state.port);
         field(ui, &state.settings, sized("Username", text_size), &mut state.stats.name);
 
-        if button(ui, &state.settings, sized("Cancel", text_size)).clicked() {
-            cancel = true;
-        }
+        row(ui, |ui| {
+            if button(ui, &state.settings, sized("CANCEL", text_size)).clicked() {
+                cancel = true;
+            }
+
+            align(ui, &Align::Center, |ui| {
+                if button(ui, &state.settings, sized("CONNECT", text_size)).clicked() {
+                    state.connecting = true;
+                }
+            });
+        });
     });
 
     if cancel || !state.show_connect {
         state.show_connect = true;
         state.go_back();
+    }
+
+    if state.connecting {
+        todo!();
     }
 }
