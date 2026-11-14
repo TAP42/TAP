@@ -4,9 +4,9 @@ package tcp
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
-	"strings"
 )
 
 // listenAddr binds every interface so players on other machines can join.
@@ -20,58 +20,52 @@ func TCP() error {
 	if err != nil {
 		return fmt.Errorf("listen on %s: %w", listenAddr, err)
 	}
-	defer func() {
-		if err := listener.Close(); err != nil {
-			log.Printf("close listener: %v", err)
-		}
-	}()
+	defer closeOrLog(listener, "listener")
+
+	players := newRegistry()
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Println("Error acception connection:", err)
+			log.Printf("accept connection: %v", err)
 			continue
 		}
-		fmt.Println("Server → Client: OK hello proto=1")
-
-		go handleConnection(conn)
+		go handleConnection(conn, players)
 	}
 }
 
-func parsecommand(message string) (string, string) {
-	command, after, _ := strings.Cut(strings.TrimSpace(message), " ")
-	return strings.ToUpper(command), after
-}
-
-func writeMessage(title string, message string, conn net.Conn) {
-	response := fmt.Sprintf(title, message)
-	_, err := conn.Write([]byte(response))
-	if err != nil {
-		log.Printf("Server writer error: %v", err)
+// closeOrLog closes c and logs the error, if any.
+func closeOrLog(c io.Closer, name string) {
+	if err := c.Close(); err != nil {
+		log.Printf("close %s: %v", name, err)
 	}
 }
 
-func handleConnection(conn net.Conn) {
-	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Printf("close connection: %v", err)
-		}
-	}()
-
+// handleConnection greets one client, then answers its commands until it
+// quits or disconnects.
+func handleConnection(conn net.Conn, players *registry) {
+	defer closeOrLog(conn, "connection")
+	if err := writeLine(conn, greeting); err != nil {
+		log.Printf("write greeting: %v", err)
+		return
+	}
+	sess := &session{conn: conn}
+	defer sess.leave(players)
 	reader := bufio.NewReader(conn)
 	for {
 		message, err := reader.ReadString('\n')
 		if err != nil {
-			log.Printf("Read error: %v", err)
+			log.Printf("read: %v", err)
 			return
 		}
-		command, data := parsecommand(message)
-		writeMessage("ACK: %s\n", command, conn)
-		if command == "QUIT" {
-			writeMessage("%s\n", "BYE:", conn)
-			fmt.Println("QUIT THE GAME")
+		command, args := parseCommand(message)
+		quit, err := handleCommand(sess, command, args, players)
+		if err != nil {
+			log.Printf("write: %v", err)
 			return
 		}
-		fmt.Println(command, data)
+		if quit {
+			return
+		}
 	}
 }
