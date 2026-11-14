@@ -1,6 +1,7 @@
 mod gui;
 mod palette;
 mod state;
+mod network;
 
 use gui::draw;
 use eframe::{egui, Result};
@@ -15,6 +16,7 @@ struct  TApp {
 
 impl eframe::App for TApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.state.poll_network();
         egui::CentralPanel::default().show(ui, |ui| {
             ui.heading("testing");
             draw(ui, &mut self.state)

@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
 use std::fs::{read_to_string, write};
 use eframe::egui::Context;
+use crate::network::{Connection, NetEvent};
 
 #[derive(Default, PartialEq, Clone, Copy)]
 pub enum    Scene {
@@ -82,7 +83,6 @@ pub struct  PlayerStats {
     pub def: i32,
     pub spd: i32,
     pub bal: i32,
-    pub name: String,
 }
 
 impl Default for PlayerStats {
@@ -94,7 +94,6 @@ impl Default for PlayerStats {
             def: 1,
             spd: 1,
             bal: 100,
-            name: "Name".to_string(),
         }
     }
 }
@@ -105,10 +104,13 @@ pub struct  AppState {
     pub previous_scene: Option<Scene>,
 
     pub stats: PlayerStats,
+    pub username: String,
     
     pub connected: bool,
     pub connecting: bool,
     pub show_connect: bool,
+    pub connection: Option<Connection>,
+    pub connect_error: Option<String>,
     pub host: String,
     pub port: String,
 
@@ -131,6 +133,48 @@ impl    AppState {
     pub fn  go_back(&mut self) {
         if let Some(prev) = self.previous_scene.take() {
             self.scene = prev;
+        }
+    }
+}
+
+impl    AppState {
+    pub fn  poll_network(&mut self) {
+        let mut accepted = false;
+        let mut rejected: Option<String> = None;
+        let mut closed: Option<String> = None;
+
+        if let Some(conn) = &self.connection {
+            while let Some(event) = conn.try_recv() {
+                match event {
+                    NetEvent::Connected => {}
+                    NetEvent::Line(line) => {
+                        if line.starts_with("OK hello") {
+                            // greeting: now it's our turn to identify
+                            conn.send(&format!("CONNECT {}", self.username));
+                        } else if self.connecting && line.starts_with("OK") {
+                            accepted = true;
+                        } else if self.connecting && line.starts_with("ERR") {
+                            rejected = Some(line);
+                        } else {
+                            self.logs.push(line);
+                        }
+                    }
+                    NetEvent::Closed(reason) => { closed = Some(reason); break; }
+                }
+            }
+        }
+
+        if accepted {
+            self.connecting = false;
+            self.connect_error = None;
+            self.go_to(Scene::Game);
+        } else if let Some(err) = rejected.or(closed) {
+            self.connection = None;
+            self.connecting = false;
+            self.connect_error = Some(err);
+            if self.scene == Scene::Game {
+                self.go_to(Scene::Menu);
+            }
         }
     }
 }

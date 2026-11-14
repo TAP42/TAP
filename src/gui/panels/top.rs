@@ -20,7 +20,7 @@ pub fn draw_top(ui: &mut Ui, state: &AppState) {
         ui.label(sized(bold(connection_code(&state.connected)), text_size));
         ui.separator();
         ui.label(sized(format!("{} - {}/{}HP",
-            state.stats.name,
+            state.username,
             state.stats.hp,
             state.stats.max_hp), text_size));
         ui.separator();
