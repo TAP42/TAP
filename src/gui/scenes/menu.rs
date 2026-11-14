@@ -10,16 +10,16 @@ pub fn  draw_menu(ui: &mut Ui, state: &mut AppState) {
 
     ui.add_space((ui.available_height() - 80.0) / 2.0);
     centered(ui, |ui| {
-        if button(ui, state, sized(bold("START"), text_size)).clicked() {
+        if button(ui, &state.settings, sized(bold("START"), text_size)).clicked() {
             state.show_connect = true;
             state.go_to(Scene::Lobby);
         }
 
-        if button(ui, state, sized(bold("SETTINGS"), text_size)).clicked() {
+        if button(ui, &state.settings, sized(bold("SETTINGS"), text_size)).clicked() {
             state.go_to(Scene::Settings);
         }
 
-        if button(ui, state, sized(bold("QUIT"), text_size)).clicked() {
+        if button(ui, &state.settings, sized(bold("QUIT"), text_size)).clicked() {
             state.go_to(Scene::Quit);
         }
     });

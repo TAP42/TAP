@@ -1,6 +1,6 @@
 //pops an internal window in the existing window, w/ address, host, player's username
 use eframe::egui::{Ui, Window};
-use crate::gui::components::{button, back, window};
+use crate::gui::components::{button, back, window, field};
 use crate::state::{AppState, Scene};
 use crate::palette::{colored, sized, bold, *};
 
@@ -10,14 +10,11 @@ pub fn  connect(ui: &mut Ui, state: &mut AppState) {
     let mut cancel: bool = false;
 
     window(ui, "Connect to server", &mut state.show_connect, |ui| {
-        ui.label(sized(bold("Host"), text_size));
-        ui.text_edit_singleline(&mut state.host);
-        ui.label(sized(bold("Port"), text_size));
-        ui.text_edit_singleline(&mut state.port);
-        ui.label(sized(bold("Username"), text_size));
-        ui.text_edit_singleline(&mut state.stats.name);
+        field(ui, &state.settings, sized("Host", text_size), &mut state.host);
+        field(ui, &state.settings, sized("Port", text_size), &mut state.port);
+        field(ui, &state.settings, sized("Username", text_size), &mut state.stats.name);
 
-        if ui.button(sized("Cancel", text_size)).clicked() {
+        if button(ui, &state.settings, sized("Cancel", text_size)).clicked() {
             cancel = true;
         }
     });
