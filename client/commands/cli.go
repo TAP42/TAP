@@ -4,6 +4,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"os"
 	"strings"
 
@@ -36,7 +37,7 @@ type Args struct {
 }
 
 // Cli prints the banner and runs the input loop until the user quits.
-func Cli() error {
+func Cli(conn net.Conn) error {
 	printBanner()
 	fmt.Println("Type HELP for commands, QUIT to exit.")
 	input, err := readline.NewFromConfig(&readline.Config{Prompt: "> "})
@@ -50,17 +51,21 @@ func Cli() error {
 	}()
 	for {
 		line, err := input.ReadLine()
-		if err != nil || !handleLine(input, strings.TrimSpace(line)) {
+		if err != nil || !handleLine(input, conn, strings.TrimSpace(line)) {
 			return nil
 		}
 	}
 }
 
 // handleLine runs one input line and returns false when the user quits.
-func handleLine(input *readline.Instance, line string) bool {
+// HELP and CLEAR are local; anything else is sent to the server.
+func handleLine(input *readline.Instance, conn net.Conn, line string) bool {
 	switch {
 	case line == "":
 	case strings.EqualFold(line, "quit"):
+		if _, err := fmt.Fprintln(conn, "QUIT"); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+		}
 		return false
 	case strings.EqualFold(line, "help"):
 		if err := help(); err != nil {
@@ -69,7 +74,10 @@ func handleLine(input *readline.Instance, line string) bool {
 	case strings.EqualFold(line, "clear"):
 		input.ClearScreen()
 	default:
-		fmt.Printf("Unknown command %q. Type HELP.\n", line)
+		if _, err := fmt.Fprintf(conn, "%s\n", line); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			return false
+		}
 	}
 	return true
 }
