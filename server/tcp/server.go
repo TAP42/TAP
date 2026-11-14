@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net"
+
+	"github.com/TAP42/TAP/world"
 )
 
 // listenAddr binds every interface so players on other machines can join.
@@ -14,7 +16,7 @@ const listenAddr = ":4242"
 
 // TCP listens on listenAddr and serves each client in its own goroutine.
 // It only returns when the listener cannot be created.
-func TCP() error {
+func TCP(gameWorld *world.World) error {
 	//nolint:gosec // public on purpose, see listenAddr.
 	listener, err := net.Listen("tcp", listenAddr)
 	if err != nil {
@@ -22,7 +24,7 @@ func TCP() error {
 	}
 	defer closeOrLog(listener, "listener")
 
-	players := newRegistry()
+	state := &game{players: newRegistry(), world: gameWorld}
 
 	for {
 		conn, err := listener.Accept()
@@ -30,7 +32,7 @@ func TCP() error {
 			log.Printf("accept connection: %v", err)
 			continue
 		}
-		go handleConnection(conn, players)
+		go handleConnection(conn, state)
 	}
 }
 
@@ -43,14 +45,14 @@ func closeOrLog(c io.Closer, name string) {
 
 // handleConnection greets one client, then answers its commands until it
 // quits or disconnects.
-func handleConnection(conn net.Conn, players *registry) {
+func handleConnection(conn net.Conn, state *game) {
 	defer closeOrLog(conn, "connection")
 	if err := writeLine(conn, greeting); err != nil {
 		log.Printf("write greeting: %v", err)
 		return
 	}
 	sess := &session{conn: conn}
-	defer sess.leave(players)
+	defer sess.leave(state.players)
 	reader := bufio.NewReader(conn)
 	for {
 		message, err := reader.ReadString('\n')
@@ -59,7 +61,7 @@ func handleConnection(conn net.Conn, players *registry) {
 			return
 		}
 		command, args := parseCommand(message)
-		quit, err := handleCommand(sess, command, args, players)
+		quit, err := handleCommand(sess, command, args, state)
 		if err != nil {
 			log.Printf("write: %v", err)
 			return

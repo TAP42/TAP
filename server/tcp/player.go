@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net"
 	"sync"
+
+	"github.com/TAP42/TAP/world"
 )
 
 // Player is a connected client that has chosen a name with CONNECT.
@@ -11,6 +13,12 @@ type Player struct {
 	name string
 	room string
 	conn net.Conn
+}
+
+// game is the state shared by every connection.
+type game struct {
+	players *registry
+	world   *world.World
 }
 
 // registry holds every connected player, indexed by name.

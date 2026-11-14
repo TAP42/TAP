@@ -9,14 +9,13 @@ import (
 )
 
 func main() {
-	w, err := world.Load("data/world.yaml")
+	gameWorld, err := world.Load("data/world.yaml")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-	fmt.Printf("%+v\n", w.Locations["start"])
 
-	if err := tcp.TCP(); err != nil {
+	if err := tcp.TCP(gameWorld); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}

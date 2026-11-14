@@ -37,13 +37,13 @@ func handleCommand(
 	sess *session,
 	command string,
 	args string,
-	players *registry,
+	state *game,
 ) (bool, error) {
 	switch command {
 	case "QUIT":
 		return true, writeLine(sess.conn, byeReply)
 	case "CONNECT":
-		return false, handleConnect(sess, args, players)
+		return false, handleConnect(sess, args, state)
 	}
 	if sess.player == nil {
 		return false, writeLine(sess.conn, noConnected)
@@ -52,14 +52,14 @@ func handleCommand(
 }
 
 // handleConnect gives the session a player name, once, if the name is free.
-func handleConnect(sess *session, name string, players *registry) error {
+func handleConnect(sess *session, name string, state *game) error {
 	if sess.player != nil {
 		return writeLine(sess.conn, alreadyConnected)
 	}
 	if name == "" || strings.ContainsAny(name, " \t") {
 		return writeLine(sess.conn, invalidName)
 	}
-	player, err := players.add(name, sess.conn)
+	player, err := state.players.add(name, sess.conn)
 	if err != nil {
 		return writeLine(sess.conn, nameInUse)
 	}
