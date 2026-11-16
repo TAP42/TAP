@@ -35,6 +35,9 @@ func newRegistry() *registry {
 // errNameInUse is returned by add when another player holds the name.
 var errNameInUse = errors.New("name already in use")
 
+// startRoom is where every new player appears.
+const startRoom = "start"
+
 // session is the state of one TCP connection.
 type session struct {
 	conn   net.Conn
@@ -48,7 +51,7 @@ func (r *registry) add(name string, conn net.Conn) (*Player, error) {
 	if _, present := r.players[name]; present {
 		return nil, errNameInUse
 	}
-	player := &Player{name: name, conn: conn}
+	player := &Player{name: name, conn: conn, room: startRoom}
 	r.players[name] = player
 	return player, nil
 }
