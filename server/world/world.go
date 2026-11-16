@@ -46,7 +46,7 @@ type Item struct {
 type NPC struct {
 	Name        string   `yaml:"name"`
 	Description string   `yaml:"description"`
-	Dialogue    []string `yaml:"dialogue"`
+	Dialog      []string `yaml:"dialogue"`
 	Stats       Stats    `yaml:"stats"`
 }
 
@@ -55,10 +55,12 @@ type Stats struct {
 	HP int `yaml:"hp"`
 }
 
+// Load reads and decodes the world file at path.
 func Load(path string) (*World, error) {
+	//nolint:gosec // path is chosen by the server operator, not by a client.
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read wolrd %w", err)
+		return nil, fmt.Errorf("read world %w", err)
 	}
 	var file File
 	if err := yaml.Unmarshal(data, &file); err != nil {
