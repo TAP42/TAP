@@ -48,7 +48,12 @@ func handleCommand(
 	if sess.player == nil {
 		return false, writeLine(sess.conn, noConnected)
 	}
-	return false, writeLine(sess.conn, unknownCommand)
+	switch command {
+	case "LOOK":
+		return false, handleLook(sess, state)
+	default:
+		return false, writeLine(sess.conn, unknownCommand)
+	}
 }
 
 // handleConnect gives the session a player name, once, if the name is free.
@@ -65,4 +70,9 @@ func handleConnect(sess *session, name string, state *game) error {
 	}
 	sess.player = player
 	return writeLine(sess.conn, connectedReply)
+}
+
+func handleLook(sess *session, state *game) error {
+	room := state.world.Locations[sess.player.room]
+	return writeLine(sess.conn, "OK "+room.Name)
 }
