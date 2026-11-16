@@ -38,12 +38,6 @@ var errNameInUse = errors.New("name already in use")
 // startRoom is where every new player appears.
 const startRoom = "start"
 
-// session is the state of one TCP connection.
-type session struct {
-	conn   net.Conn
-	player *Player // nil until CONNECT succeeds
-}
-
 // add registers a new player under name, or fails if the name is taken.
 func (r *registry) add(name string, conn net.Conn) (*Player, error) {
 	r.mu.Lock()
@@ -61,11 +55,4 @@ func (r *registry) remove(name string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	delete(r.players, name)
-}
-
-// leave frees the session's player name, if it has one.
-func (sess *session) leave(players *registry) {
-	if sess.player != nil {
-		players.remove(sess.player.name)
-	}
 }
