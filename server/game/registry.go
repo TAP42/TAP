@@ -44,7 +44,7 @@ func (r *Registry) NamesIn(room string) []string {
 	names := []string{}
 	for _, user := range r.players {
 		if user.Room == room {
-			names = append(names, user.Name, ",")
+			names = append(names, user.Name)
 		}
 	}
 	return names
