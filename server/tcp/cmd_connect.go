@@ -10,7 +10,7 @@ func handleConnect(sess *session, name string, state *gameState) error {
 	if name == "" || strings.ContainsAny(name, " \t") {
 		return writeLine(sess.conn, invalidName)
 	}
-	player, err := state.players.add(name, sess.conn)
+	player, err := state.players.add(name)
 	if err != nil {
 		return writeLine(sess.conn, nameInUse)
 	}

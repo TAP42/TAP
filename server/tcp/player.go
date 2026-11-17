@@ -1,7 +1,6 @@
 package tcp
 
 import (
-	"net"
 	"sync"
 
 	"github.com/TAP42/TAP/game"
@@ -12,7 +11,6 @@ import (
 type Player struct {
 	name string
 	room string
-	conn net.Conn
 }
 
 // game is the state shared by every connection.
@@ -36,13 +34,13 @@ func newRegistry() *registry {
 const startRoom = "start"
 
 // add registers a new player under name, or fails if the name is taken.
-func (r *registry) add(name string, conn net.Conn) (*Player, error) {
+func (r *registry) add(name string) (*Player, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, present := r.players[name]; present {
 		return nil, game.ErrNameInUse
 	}
-	player := &Player{name: name, conn: conn, room: startRoom}
+	player := &Player{name: name, room: startRoom}
 	r.players[name] = player
 	return player, nil
 }
