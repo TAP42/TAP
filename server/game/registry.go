@@ -12,7 +12,7 @@ type Registry struct {
 const startRoom = "start"
 
 // NewRegistry returns an empty registry ready to use.
-func NewRegistry() *Registry {
+func newRegistry() *Registry {
 	return &Registry{players: make(map[string]*Player)}
 }
 

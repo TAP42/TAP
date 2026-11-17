@@ -24,7 +24,7 @@ func TCP(gameWorld *world.World) error {
 	}
 	defer closeOrLog(listener, "listener")
 
-	state := &game.State{Players: game.NewRegistry(), World: gameWorld}
+	state := game.NewState(gameWorld)
 
 	for {
 		conn, err := listener.Accept()
