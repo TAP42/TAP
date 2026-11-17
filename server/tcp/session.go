@@ -14,7 +14,7 @@ type session struct {
 
 // handleConnection greets one client, then answers its commands until it
 // quits or disconnects.
-func handleConnection(conn net.Conn, state *game) {
+func handleConnection(conn net.Conn, state *gameState) {
 	defer closeOrLog(conn, "connection")
 	if err := writeLine(conn, greeting); err != nil {
 		log.Printf("write greeting: %v", err)

@@ -5,7 +5,7 @@ func handleCommand(
 	sess *session,
 	command string,
 	args string,
-	state *game,
+	state *gameState,
 ) (bool, error) {
 	switch command {
 	case "QUIT":

@@ -3,7 +3,7 @@ package tcp
 import "strings"
 
 // handleConnect gives the session a player name, once, if the name is free.
-func handleConnect(sess *session, name string, state *game) error {
+func handleConnect(sess *session, name string, state *gameState) error {
 	if sess.player != nil {
 		return writeLine(sess.conn, alreadyConnected)
 	}

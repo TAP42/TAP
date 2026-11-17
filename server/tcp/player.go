@@ -1,10 +1,10 @@
 package tcp
 
 import (
-	"errors"
 	"net"
 	"sync"
 
+	"github.com/TAP42/TAP/game"
 	"github.com/TAP42/TAP/world"
 )
 
@@ -16,7 +16,7 @@ type Player struct {
 }
 
 // game is the state shared by every connection.
-type game struct {
+type gameState struct {
 	players *registry
 	world   *world.World
 }
@@ -32,9 +32,6 @@ func newRegistry() *registry {
 	return &registry{players: make(map[string]*Player)}
 }
 
-// errNameInUse is returned by add when another player holds the name.
-var errNameInUse = errors.New("name already in use")
-
 // startRoom is where every new player appears.
 const startRoom = "start"
 
@@ -43,7 +40,7 @@ func (r *registry) add(name string, conn net.Conn) (*Player, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, present := r.players[name]; present {
-		return nil, errNameInUse
+		return nil, game.ErrNameInUse
 	}
 	player := &Player{name: name, conn: conn, room: startRoom}
 	r.players[name] = player
