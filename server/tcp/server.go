@@ -1,4 +1,4 @@
-// package tcp.
+// Package tcp serves the 42TAP protocol over TCP.
 package tcp
 
 import (

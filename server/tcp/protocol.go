@@ -6,16 +6,18 @@ import (
 	"strings"
 )
 
-// Protocol lines sent by the server (RFC 42TAP).
+// Protocol lines sent by the server.
 const (
+	// Defined by RFC 42TAP.
 	greeting       = "OK hello proto=1"
 	byeReply       = "OK bye"
-	unknownCommand = "ERR 400 UNKNOWN_COMMAND"
 	nameInUse      = "ERR 201 NAME_IN_USE"
 	connectedReply = "OK connected"
-	noConnected    = "ERR 400 NOT_CONNECTED"
 
-	// Not in the RFC: CONNECT sent twice, or with a bad name.
+	// Not in the RFC: unknown command, command before CONNECT,
+	// CONNECT sent twice, or a bad name.
+	unknownCommand   = "ERR 400 UNKNOWN_COMMAND"
+	noConnected      = "ERR 400 NOT_CONNECTED"
 	alreadyConnected = "ERR 400 ALREADY_CONNECTED"
 	invalidName      = "ERR 400 INVALID_NAME"
 )
