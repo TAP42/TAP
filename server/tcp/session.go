@@ -4,12 +4,14 @@ import (
 	"bufio"
 	"log"
 	"net"
+
+	"github.com/TAP42/TAP/game"
 )
 
 // session is the state of one TCP connection.
 type session struct {
 	conn   net.Conn
-	player *Player // nil until CONNECT succeeds
+	player *game.Player // nil until CONNECT succeeds
 }
 
 // handleConnection greets one client, then answers its commands until it
@@ -44,6 +46,6 @@ func handleConnection(conn net.Conn, state *gameState) {
 // leave frees the session's player name, if it has one.
 func (sess *session) leave(players *registry) {
 	if sess.player != nil {
-		players.remove(sess.player.name)
+		players.remove(sess.player.Name)
 	}
 }
