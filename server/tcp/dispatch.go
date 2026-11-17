@@ -1,11 +1,13 @@
 package tcp
 
+import "github.com/TAP42/TAP/game"
+
 // handleCommand answers one command and reports whether the client leaves.
 func handleCommand(
 	sess *session,
 	command string,
 	args string,
-	state *gameState,
+	state *game.State,
 ) (bool, error) {
 	switch command {
 	case "QUIT":

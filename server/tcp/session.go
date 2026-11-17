@@ -16,14 +16,14 @@ type session struct {
 
 // handleConnection greets one client, then answers its commands until it
 // quits or disconnects.
-func handleConnection(conn net.Conn, state *gameState) {
+func handleConnection(conn net.Conn, state *game.State) {
 	defer closeOrLog(conn, "connection")
 	if err := writeLine(conn, greeting); err != nil {
 		log.Printf("write greeting: %v", err)
 		return
 	}
 	sess := &session{conn: conn}
-	defer sess.leave(state.players)
+	defer sess.leave(state.Players)
 	reader := bufio.NewReader(conn)
 	for {
 		message, err := reader.ReadString('\n')
@@ -44,8 +44,8 @@ func handleConnection(conn net.Conn, state *gameState) {
 }
 
 // leave frees the session's player name, if it has one.
-func (sess *session) leave(players *registry) {
+func (sess *session) leave(players *game.Registry) {
 	if sess.player != nil {
-		players.remove(sess.player.Name)
+		players.Remove(sess.player.Name)
 	}
 }

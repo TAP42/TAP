@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/TAP42/TAP/game"
 	"github.com/TAP42/TAP/world"
 )
 
@@ -23,7 +24,7 @@ func TCP(gameWorld *world.World) error {
 	}
 	defer closeOrLog(listener, "listener")
 
-	state := &gameState{players: newRegistry(), world: gameWorld}
+	state := &game.State{Players: game.NewRegistry(), World: gameWorld}
 
 	for {
 		conn, err := listener.Accept()
