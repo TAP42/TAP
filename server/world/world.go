@@ -46,7 +46,7 @@ type Item struct {
 type NPC struct {
 	Name        string   `yaml:"name"`
 	Description string   `yaml:"description"`
-	Dialog      []string `yaml:"dialogue"`
+	Dialog      []string `yaml:"dialog"` //nolint:misspell // YAML key.
 	Stats       Stats    `yaml:"stats"`
 }
 
