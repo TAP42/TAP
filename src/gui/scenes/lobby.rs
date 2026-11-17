@@ -1,6 +1,6 @@
 //pops an internal window in the existing window, w/ address, host, player's username
 use eframe::egui::{Ui, Layout, Align};
-use crate::gui::components::{button, window, field, row, align};
+use crate::gui::components::{button, window, field, row, align, label};
 use crate::state::{AppState, Scene};
 use crate::palette::{colored, sized, bold, *};
 use crate::network::{Connection, NetEvent};
@@ -12,7 +12,7 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
 
     window(ui, "Connect to server", &mut state.show_connect, |ui| {
         if let Some(err) = &state.connect_error {
-            ui.label(colored(bold(err.as_str()), RED));
+            label(ui, &state.settings, colored(bold(err.as_str()), RED));
         }
 
         field(ui, &state.settings, sized("Host", text_size), &mut state.host);
@@ -37,7 +37,7 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
                 if connecting {
                     row(ui, |ui| {
                         ui.spinner();
-                        ui.label("Connecting...");
+                        label(ui, &state.settings, "Connecting...");
                         state.connected = true;
                     });
                 }

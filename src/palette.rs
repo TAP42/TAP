@@ -34,7 +34,7 @@ pub struct  Theme {
 impl    Theme {
     pub fn  dark() -> Self {
         Self {
-            background: Color32::from_rgb(30, 30, 30),
+            background: Color32::from_rgb(50, 50, 50),
             panel: Color32::from_rgb(20, 20, 20),
             widget: Color32::from_rgb(40, 40, 40),
             accent: Color32::from_rgb(150, 120, 60),
@@ -55,7 +55,7 @@ impl    Theme {
     pub fn  apply(&self, ctx: &Context) {
         let mut v = Visuals::dark();
         v.panel_fill = self.panel;
-        v.window_fill = self.background;
+        v.window_fill = self.panel;
         v.extreme_bg_color = self.background;
         v.override_text_color = Some(self.text);
         v.selection.bg_fill = self.accent;

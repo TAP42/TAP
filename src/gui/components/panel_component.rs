@@ -1,6 +1,21 @@
-use eframe::egui::{Ui, RichText, ProgressBar, Align, Layout};
+use eframe::egui::{Ui, RichText, ProgressBar, Align, Layout, Panel, Frame};
 use crate::state::AppState;
 use crate::palette::{colored, sized, bold, *};
+
+pub fn  panel<R>(ui: &mut Ui, panel: Panel, add_contents: impl FnOnce(&mut Ui) -> R) {
+    let frame = Frame::new()
+        .fill(ui.visuals().panel_fill)
+        .stroke(ui.visuals().widgets.noninteractive.bg_stroke)
+        .inner_margin(8.0);
+    panel.frame(frame).show(ui, add_contents);
+}
+
+pub fn  chat<R>(ui: &mut Ui, panel: Panel, add_contents: impl FnOnce(&mut Ui) -> R) {
+    let frame = Frame::new()
+        .fill(ui.visuals().panel_fill)
+        .stroke(ui.visuals().widgets.noninteractive.bg_stroke);
+    panel.frame(frame).show(ui, add_contents);
+}
 
 pub fn  centered<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) {
     ui.vertical_centered(|ui| {

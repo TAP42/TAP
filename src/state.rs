@@ -24,6 +24,14 @@ pub enum    ThemeKind {
     Light,
 }
 
+#[derive(Default)]
+pub enum    Channel {
+    #[default]
+    Global,
+    Room,
+    Group,
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default)]
 pub struct  Settings {
@@ -114,11 +122,11 @@ pub struct  AppState {
     pub host: String,
     pub port: String,
 
+    pub channel: Channel,
     pub selected_channel: i32,
     pub input_text: String,
     pub chat: Vec<Vec<String>>,
     pub logs: Vec<String>,
-    
     pub settings: Settings,
 }
 
