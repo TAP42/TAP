@@ -59,7 +59,7 @@ impl Connection {
                 for line in BufReader::new(reader_stream).lines() {
                     let Ok(line) = line else { break };
                     if reader_tx.send(NetEvent::Line(line)).is_err() {
-                        return; // UI dropped the connection
+                        return;
                     }
                     reader_ctx.request_repaint();
                 }

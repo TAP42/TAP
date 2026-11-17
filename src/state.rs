@@ -135,9 +135,7 @@ impl    AppState {
             self.scene = prev;
         }
     }
-}
 
-impl    AppState {
     pub fn  poll_network(&mut self) {
         let mut accepted = false;
         let mut rejected: Option<String> = None;

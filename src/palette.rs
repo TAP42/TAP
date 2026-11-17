@@ -18,7 +18,7 @@ impl    From<ThemeKind> for Theme {
     fn  from(kind: ThemeKind) -> Self {
         match kind {
             ThemeKind::Dark => Theme::dark(),
-            ThemeKind::Light => todo!(),
+            ThemeKind::Light => Theme::light(),
         }
     }
 }
@@ -39,6 +39,16 @@ impl    Theme {
             widget: Color32::from_rgb(40, 40, 40),
             accent: Color32::from_rgb(150, 120, 60),
             text: Color32::from_rgb(240, 240, 240),
+        }
+    }
+
+    pub fn  light() -> Self {
+        Self {
+            background: Color32::from_rgb(220, 220, 220),
+            panel: Color32::from_rgb(255, 255, 255),
+            widget: Color32::from_rgb(220, 220, 220),
+            accent: Color32::from_rgb(200, 200, 200),
+            text: Color32::from_rgb(0, 0, 0),
         }
     }
 

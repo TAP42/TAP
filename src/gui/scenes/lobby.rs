@@ -38,6 +38,7 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
                     row(ui, |ui| {
                         ui.spinner();
                         ui.label("Connecting...");
+                        state.connected = true;
                     });
                 }
             });
@@ -48,6 +49,7 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
         state.connection = None;
         state.connecting = false;
         state.show_connect = true;
+        state.connected = false;
         state.go_back();
     }
 }
