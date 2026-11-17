@@ -25,7 +25,7 @@ func (r *Registry) Add(name string) (*Player, error) {
 	if _, present := r.players[name]; present {
 		return nil, ErrNameInUse
 	}
-	player := &Player{Name: name, Room: startRoom}
+	player := &Player{Name: name, room: startRoom}
 	r.players[name] = player
 	return player, nil
 }
@@ -41,9 +41,14 @@ func (r *Registry) Remove(name string) {
 func (r *Registry) NamesIn(room string) []string {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	return r.namesInLocked(room)
+}
+
+// namesInLocked is NamesIn for callers that already hold r.mu.
+func (r *Registry) namesInLocked(room string) []string {
 	names := []string{}
 	for _, user := range r.players {
-		if user.Room == room {
+		if user.room == room {
 			names = append(names, user.Name)
 		}
 	}
