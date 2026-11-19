@@ -32,6 +32,13 @@ pub enum    Channel {
     Group,
 }
 
+#[derive(Default)]
+pub struct  ChatMessage {
+    pub author: String,
+    pub text: String,
+    pub system: bool,
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default)]
 pub struct  Settings {
@@ -123,9 +130,11 @@ pub struct  AppState {
     pub port: String,
 
     pub channel: Channel,
-    pub selected_channel: i32,
+    pub selected_channel: Channel,
+    pub global: Vec<ChatMessage>,
+    pub room: Vec<ChatMessage>,
+    pub group: Vec<ChatMessage>,
     pub input_text: String,
-    pub chat: Vec<Vec<String>>,
     pub logs: Vec<String>,
     pub settings: Settings,
 }
@@ -155,7 +164,6 @@ impl    AppState {
                     NetEvent::Connected => {}
                     NetEvent::Line(line) => {
                         if line.starts_with("OK hello") {
-                            // greeting: now it's our turn to identify
                             conn.send(&format!("CONNECT {}", self.username));
                         } else if self.connecting && line.starts_with("OK") {
                             accepted = true;
@@ -182,5 +190,9 @@ impl    AppState {
                 self.go_to(Scene::Menu);
             }
         }
+    }
+
+    pub fn  push_chat(&self, channel: Channel, message: String) {
+        todo!();
     }
 }

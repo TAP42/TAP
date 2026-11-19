@@ -18,7 +18,6 @@ impl eframe::App for TApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.state.poll_network();
         egui::CentralPanel::default().show(ui, |ui| {
-            ui.heading("testing");
             draw(ui, &mut self.state)
         });
     }

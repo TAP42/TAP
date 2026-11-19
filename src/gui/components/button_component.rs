@@ -4,8 +4,8 @@ use crate::state::{Settings, AppState};
 
 pub fn  button(ui: &mut Ui, settings: &Settings, text: impl Into<WidgetText>) -> Response {
     //add_sized([w, h]): forces a button size
-    let w: f32 = 120.0 * settings.button_w;
-    let h: f32 = 60.0 * settings.button_h;
+    let w: f32 = 110.0 * settings.button_w;
+    let h: f32 = 40.0 * settings.button_h;
 
     ui.add_sized([w, h], Button::new(text))
 }

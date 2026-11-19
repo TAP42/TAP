@@ -1,6 +1,6 @@
 //pops an internal window in the existing window, w/ address, host, player's username
 use eframe::egui::{Ui, Layout, Align};
-use crate::gui::components::{button, window, field, row, align, label};
+use crate::gui::components::{button, window, field, centered, row, align, label};
 use crate::state::{AppState, Scene};
 use crate::palette::{colored, sized, bold, *};
 use crate::network::{Connection, NetEvent};
@@ -15,10 +15,11 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
             label(ui, &state.settings, colored(bold(err.as_str()), RED));
         }
 
-        field(ui, &state.settings, sized("Host", text_size), &mut state.host);
-        field(ui, &state.settings, sized("Port", text_size), &mut state.port);
-        field(ui, &state.settings, sized("Username", text_size), &mut state.username);
-
+        row(ui, |ui| {
+            field(ui, &state.settings, sized("Host", text_size), &mut state.host);
+            field(ui, &state.settings, sized("Port", text_size), &mut state.port);
+            field(ui, &state.settings, sized("Username", text_size), &mut state.username);
+        });
         row(ui, |ui| {
             if button(ui, &state.settings, sized("CANCEL", text_size)).clicked() {
                 cancel = true;
@@ -35,7 +36,7 @@ pub fn connect(ui: &mut Ui, state: &mut AppState) {
                     }
                 });
                 if connecting {
-                    row(ui, |ui| {
+                    centered(ui, |ui| {
                         ui.spinner();
                         label(ui, &state.settings, "Connecting...");
                         state.connected = true;
