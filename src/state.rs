@@ -24,12 +24,35 @@ pub enum    ThemeKind {
     Light,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub enum    Channel {
     #[default]
     Global,
     Room,
     Group,
+}
+
+impl    Channel {
+    pub fn  from_scope(scope: &str) -> Option<Self> {
+        match scope {
+            "GLOBAL" => Some(Self::Global),
+            "ROOM" => Some(Self::Room),
+            "GROUP" => Some(Self::Group),
+            _ => None,
+        }
+    }
+
+    pub fn  scope(self) -> &'static str {
+        match self {
+            Self::Global => "GLOBAL",
+            Self::Room => "ROOM",
+            Self::Group => "GROUP",
+        }
+    }
+
+    fn  index(self) -> usize {
+        self as usize
+    }
 }
 
 #[derive(Default)]
@@ -38,6 +61,8 @@ pub struct  ChatMessage {
     pub text: String,
     pub system: bool,
 }
+
+const   MAX_CHAT: usize = 500;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default)]
@@ -131,10 +156,14 @@ pub struct  AppState {
 
     pub channel: Channel,
     pub selected_channel: Channel,
+
     pub global: Vec<ChatMessage>,
     pub room: Vec<ChatMessage>,
     pub group: Vec<ChatMessage>,
+
     pub input_text: String,
+    pub chat: [Vec<ChatMessage>; 3],
+    pub unread: [bool; 3],
     pub logs: Vec<String>,
     pub settings: Settings,
 }
@@ -154,26 +183,51 @@ impl    AppState {
     }
 
     pub fn  poll_network(&mut self) {
+        let mut events = Vec::new();
+        if let Some(conn) = &self.connection {
+            while let Some(event) = conn.try_recv() {
+                events.push(event);
+            }
+        }
+
         let mut accepted = false;
         let mut rejected: Option<String> = None;
         let mut closed: Option<String> = None;
 
-        if let Some(conn) = &self.connection {
-            while let Some(event) = conn.try_recv() {
-                match event {
-                    NetEvent::Connected => {}
-                    NetEvent::Line(line) => {
-                        if line.starts_with("OK hello") {
-                            conn.send(&format!("CONNECT {}", self.username));
-                        } else if self.connecting && line.starts_with("OK") {
-                            accepted = true;
-                        } else if self.connecting && line.starts_with("ERR") {
-                            rejected = Some(line);
-                        } else {
-                            self.logs.push(line);
+        for event in events {
+            match event {
+                NetEvent::Connected => {}
+                NetEvent::Closed(reason) => {
+                    closed = Some(reason);
+                    break;
+                }
+                NetEvent::Line(line) => {
+                    if let Some(rest) = line.strip_prefix("EVT ") {
+                        let mut parts = rest.splitn(4, ' ');
+                        if let (Some(scope), Some("CHAT"), Some(user), Some(text)) =
+                            (parts.next(), parts.next(), parts.next(), parts.next())
+                        {
+                            if let Some(channel) = Channel::from_scope(scope) {
+                                self.push_chat(channel, ChatMessage {
+                                    author: user.to_string(),
+                                    text: text.to_string(),
+                                    system: false,
+                                });
+                                continue;
+                            }
                         }
+                        self.logs.push(line);
+                    } else if line.starts_with("OK hello") {
+                        if let Some(conn) = &self.connection {
+                            conn.send(&format!("CONNECT {}", self.username));
+                        }
+                    } else if self.connecting && line.starts_with("OK") {
+                        accepted = true;
+                    } else if self.connecting && line.starts_with("ERR") {
+                        rejected = Some(line);
+                    } else {
+                        self.logs.push(line);
                     }
-                    NetEvent::Closed(reason) => { closed = Some(reason); break; }
                 }
             }
         }
@@ -192,7 +246,17 @@ impl    AppState {
         }
     }
 
-    pub fn  push_chat(&self, channel: Channel, message: String) {
-        todo!();
+    pub fn  push_chat(&mut self, channel: Channel, message: ChatMessage) {
+        let i       = channel.index();
+        let list    = &mut self.chat[i];
+
+        list.push(message);
+        if list.len() > MAX_CHAT {
+            list.drain(..list.len() - MAX_CHAT);
+        }
+
+        if channel != self.selected_channel {
+            self.unread[i] = true;
+        }
     }
 }
